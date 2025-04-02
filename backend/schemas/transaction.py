@@ -1,29 +1,38 @@
+from datetime import datetime
 from pydantic import BaseModel
 
+from models.db import TransactionTypeEnum
 
-class Category(BaseModel):
+class BaseTransaction(BaseModel):
+    transaction_id: str
+
+
+class CreateTransaction(BaseModel):
+    amount: int
+    description: str
+    date: datetime
+    type: TransactionTypeEnum
     category_id: str
 
+class UpdateTransactionAmount(BaseModel):
+    amount: int
 
-class Base(Category):
-    amount: float
-    desciption: str
-    date: str
-    type: str
-    user_id: str
-
-
-class Amount(Base):
-    amount: float
-
-
-class Description(Base):
+class UpdateTransactionDescription(BaseModel):
     description: str
 
+class UpdateTransactionCategory(BaseModel):
+    category_id: str
 
-class Date(Base):
-    date: str
+class UpdateTransactionDate(BaseModel):
+    date: datetime
 
+class UpdateTransactionType(BaseModel):
+    type: TransactionTypeEnum
 
-class Type(Base):
-    type: str
+class ResponseTransaction(BaseTransaction):
+    amount: int
+    description: str
+    date: datetime
+    type: TransactionTypeEnum
+    category_id: str
+    username: str
