@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from fastapi import HTTPException
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,7 +14,20 @@ class CategoryCRUD:
     def __init__(self, db_session: AsyncSession = None):
         self.db_session = db_session
 
-    async def create_category(self, transaction: cat_schema.CreateCategory, username: str):
+
+    # function to check if a categroy already exists
+    async def category_exists(self, category: cat_schema.CreateCategory, username: str) -> bool:
+        stmt = select(CategoryModel).where(
+            CategoryModel.name == category.name,
+            CategoryModel.type == category.type,
+            CategoryModel.username == username
+        )
+        result = await self.db_session.execute(stmt)
+        if result.scalars().first():
+            return True
+        return False
+
+    async def create_category(self, category: cat_schema.CreateCategory, username: str):
         # Fetch the UserModel based on the username
         user_result = await self.db_session.execute(select(UserModel).where(UserModel.username == username))
         
@@ -25,18 +39,18 @@ class CategoryCRUD:
             raise ValueError("User not found")
         
         # Create the CategoryModel instance
-        db_transaction = CategoryModel(
-            name=transaction.name,
-            type=transaction.type,
+        db_category = CategoryModel(
+            name=category.name,
+            type=category.type,
             user=user,  # Pass the user object
             username=username
         )
 
         # Add to session and commit
-        self.db_session.add(db_transaction)
+        self.db_session.add(db_category)
         await self.db_session.commit()
 
-        return db_transaction
+        return db_category
 
 
     async def get_category_by_name(self, name_pattern: str):

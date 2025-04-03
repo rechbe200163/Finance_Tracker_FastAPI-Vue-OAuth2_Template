@@ -150,6 +150,7 @@ async def delete_transaction(
     db: TransactionCRUD = Depends(get_transaction_crud),
     current_user: user_schema.Base = Depends(get_current_user),
 ):
+    print('here')
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return await db.delete_transaction(transaction_id)

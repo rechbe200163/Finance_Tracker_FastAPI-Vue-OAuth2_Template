@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import user, auth, me, transaction
+from api import user, auth, me, transaction, category
 from database.config import engine, database, Base
 
 
@@ -10,6 +10,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(user.router, prefix="/api")
 app.include_router(me.router, prefix="/api")
 app.include_router(transaction.router, prefix="/api")
+app.include_router(category.router, prefix="/api")
 
 origins = [
     "http://localhost:5173",

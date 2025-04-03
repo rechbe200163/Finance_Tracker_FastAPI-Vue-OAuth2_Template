@@ -61,6 +61,10 @@ async def create_category(
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized")
+    # Check if the category already exists
+    existing_category = await db.get_category_by_name(new_transaction.name)
+    if existing_category:
+        raise HTTPException(status_code=409, detail="Category already exists")
     return await db.create_category(new_transaction, current_user.username)
 
 @router.put("update/name/{category_id}", status_code=status.HTTP_200_OK)

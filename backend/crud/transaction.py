@@ -140,7 +140,7 @@ class TransactionCRUD:
         return transactions    
 
     async def delete_transaction(self, transaction_id: str):
-        stmt = delete(TransactionModel).where(TransactionModel.category_id == transaction_id)
+        stmt = delete(TransactionModel).where(TransactionModel.transaction_id == transaction_id)
         await self.db_session.execute(stmt)
         await self.db_session.commit()
-        return transaction_id
+        return {"message": "Transaction deleted successfully"}
