@@ -119,3 +119,15 @@ export const updateTransactionType = (transactionId, type) => {
     }
   );
 };
+
+export const apiDeleteTransaction = (transactionId) => {
+  const authStore = useAuthStore();
+  const token = authStore.get_access_token;
+  console.log('in here');
+  return axios.delete(`/transactions/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    withCredentials: true, // Ensures cookies are sent if using session-based auth
+  });
+};

@@ -71,3 +71,14 @@ export const apiUpdateCategoryName = (category_id, category_name) => {
     withCredentials: true, // Ensures cookies are sent if using session-based auth
   });
 };
+
+export const apiDeleteCategory = (category_id) => {
+  const authStore = useAuthStore();
+  const token = authStore.get_access_token;
+  return axios.delete(`/categories/${category_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    withCredentials: true, // Ensures cookies are sent if using session-based auth
+  });
+};

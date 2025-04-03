@@ -43,12 +43,6 @@ import { useRouter } from 'vue-router';
 export default {
   setup() {
     const categories = ref([]);
-    const newTransaction = ref({
-      amount: '',
-      description: '',
-      type: 'income',
-      category_id: '',
-    });
     const newCategory = ref({
       name: '',
       type: 'sports', // Default to sports, but this can be adjusted
@@ -56,66 +50,31 @@ export default {
 
     const router = useRouter();
 
-    // Fetch categories for the dropdown
-    const fetchCategories = async () => {
-      try {
-        const response = await apiGetCategories();
-        categories.value = response.data;
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    // Filter categories based on the selected transaction type
-    const filteredCategories = computed(() =>
-      categories.value.filter(
-        (category) => category.type === newTransaction.value.type
-      )
-    );
-
-    // Submit new transaction
-    const submitTransaction = async () => {
-      try {
-        const transactionData = {
-          ...newTransaction.value,
-          date: new Date().toISOString(),
-        };
-
-        await createTransaction(transactionData);
-        router.push('/transactions'); // Redirect back to the transactions page
-      } catch (error) {
-        console.error('Error creating transaction:', error);
-      }
-    };
-
     // Submit new category
     const submitCategory = async () => {
       try {
         await createCategory(newCategory.value); // Call the createCategory function
         categories.value.push(newCategory.value); // Update the categories list locally after creating the category
-
         // Optionally clear the form after creation
         newCategory.value = {
           name: '',
           type: 'sports',
         };
 
-        alert('Category created successfully!');
+        // check if response whows already exists
+        // if (resp.status === 409) {
+        //   alert('Category already exists');
+        //   return;
+        // }
+
+        router.push('/categories'); // Redirect back to the categories page
       } catch (error) {
         console.error('Error creating category:', error);
       }
     };
 
-    // On mounted, fetch categories
-    onMounted(() => {
-      fetchCategories();
-    });
-
     return {
-      newTransaction,
       categories,
-      filteredCategories,
-      submitTransaction,
       newCategory,
       submitCategory,
     };

@@ -37,7 +37,6 @@
           <th class="border p-2">Type</th>
           <th class="border p-2">Category</th>
           <th class="border p-2">Actions</th>
-          <!-- Added column for actions -->
         </tr>
       </thead>
       <tbody>
@@ -53,14 +52,19 @@
           <td class="border p-2">
             {{ getCategoryName(transaction.category_id) }}
           </td>
-          <td class="border p-2">
+          <td class="border p-2 flex space-x-2">
             <router-link
               :to="`/edit-transaction/${transaction.transaction_id}`"
             >
               <button class="p-2 bg-blue-500 text-white rounded">Edit</button>
             </router-link>
+            <button
+              @click="deleteTransaction(transaction.transaction_id)"
+              class="p-2 bg-red-500 text-white rounded"
+            >
+              Delete
+            </button>
           </td>
-          <!-- Edit button -->
         </tr>
       </tbody>
     </table>
@@ -69,7 +73,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import { apiGetTransactions } from '../api/transactions';
+import { apiGetTransactions, apiDeleteTransaction } from '../api/transactions';
 import { apiGetCategories } from '../api/categories';
 
 export default {
@@ -99,6 +103,22 @@ export default {
         categories.value = response.data;
       } catch (error) {
         console.error('Error fetching categories:', error);
+      }
+    };
+
+    const deleteTransaction = async (transactionId) => {
+      try {
+        const response = await apiDeleteTransaction(transactionId);
+
+        if (response.status === 200) {
+          transactions.value = transactions.value.filter(
+            (tx) => tx.transaction_id !== transactionId
+          );
+        } else {
+          console.error('Transaction could not be deleted:', response);
+        }
+      } catch (error) {
+        console.error('Error deleting transaction:', error);
       }
     };
 
@@ -141,6 +161,7 @@ export default {
       filteredTransactions,
       getCategoryName,
       formatDate,
+      deleteTransaction,
     };
   },
 };

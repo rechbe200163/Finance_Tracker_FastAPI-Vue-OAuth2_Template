@@ -32,10 +32,16 @@
         >
           <td class="border p-2">{{ category.name }}</td>
           <td class="border p-2">{{ category.type }}</td>
-          <td class="border p-2">
+          <td class="border p-2 flex space-x-2">
             <router-link :to="`/edit-category/${category.category_id}`">
               <button class="p-2 bg-blue-500 text-white rounded">Edit</button>
             </router-link>
+            <button
+              @click="deleteCategory(category.category_id)"
+              class="p-2 bg-red-500 text-white rounded"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
@@ -44,14 +50,13 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
-import { apiGetCategories } from '../api/categories';
+import { ref, onMounted } from 'vue';
+import { apiGetCategories, apiDeleteCategory } from '../api/categories';
 
 export default {
   setup() {
     const categories = ref([]);
     const searchQuery = ref('');
-    const selectedCategory = ref('');
 
     const fetchCategories = async () => {
       try {
@@ -62,19 +67,25 @@ export default {
       }
     };
 
+    const deleteCategory = async (categoryId) => {
+      try {
+        await apiDeleteCategory(categoryId);
+        categories.value = categories.value.filter(
+          (category) => category.category_id !== categoryId
+        );
+      } catch (error) {
+        console.error('Error deleting category:', error);
+      }
+    };
+
     onMounted(async () => {
       await fetchCategories();
     });
 
-    const formatDate = (dateString) => {
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    };
-
     return {
       categories,
       searchQuery,
-      formatDate,
+      deleteCategory,
     };
   },
 };
